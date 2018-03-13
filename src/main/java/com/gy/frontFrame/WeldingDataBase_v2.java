@@ -9,14 +9,24 @@ package com.gy.frontFrame;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 
+import org.apache.http.conn.ConnectTimeoutException;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import com.alibaba.fastjson.JSONObject;
+import com.gy.login.PublicStaticSta;
 import com.gy.utils.date.DateChooser;
+import com.gy.utils.http.HttpUtils;
 
 /**
  *
@@ -50,18 +60,18 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jSeparator7 = new javax.swing.JSeparator();
 		jSeparator4 = new javax.swing.JSeparator();
 		jSeparator1 = new javax.swing.JSeparator();
-		searchText = new javax.swing.JFormattedTextField();
-		searchTextName = new javax.swing.JFormattedTextField();
-		jComboBox1 = new javax.swing.JComboBox();
+		responsePerson = new javax.swing.JFormattedTextField();
+		recordName = new javax.swing.JFormattedTextField();
+		classifyId = new javax.swing.JComboBox();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		jTable1 = new javax.swing.JTable();
 		jLabel10 = new javax.swing.JLabel();
-		jComboBox2 = new javax.swing.JComboBox();
+		level = new javax.swing.JComboBox();
 		jLabel11 = new javax.swing.JLabel();
-		jComboBox3 = new javax.swing.JComboBox();
+		storeDate = new javax.swing.JComboBox();
 		jSeparator2 = new javax.swing.JSeparator();
 		jLabel12 = new javax.swing.JLabel();
-		searchTextName1 = new javax.swing.JFormattedTextField();
+		recordId = new javax.swing.JFormattedTextField();
 		jMenuBar1 = new javax.swing.JMenuBar();
 		jMenu1 = new javax.swing.JMenu();
 		jMenuItem1 = new javax.swing.JMenuItem();
@@ -142,16 +152,21 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
 		jSeparator1.setBounds(990, 60, 30, 100);
 		jDesktopPane2.add(jSeparator1, javax.swing.JLayeredPane.DEFAULT_LAYER);
-		searchText.setBounds(680, 110, 270, 30);
-		jDesktopPane2.add(searchText, javax.swing.JLayeredPane.DEFAULT_LAYER);
-		searchTextName.setBounds(200, 160, 280, 30);
-		jDesktopPane2.add(searchTextName,
+		responsePerson.setBounds(680, 110, 270, 30);
+		jDesktopPane2.add(responsePerson,
 				javax.swing.JLayeredPane.DEFAULT_LAYER);
+		recordName.setBounds(200, 160, 280, 30);
+		jDesktopPane2.add(recordName, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-		jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
+		classifyId.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
 				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
-		jComboBox1.setBounds(680, 60, 270, 30);
-		jDesktopPane2.add(jComboBox1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+		classifyId.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				classifyIdActionPerformed(evt);
+			}
+		});
+		classifyId.setBounds(680, 60, 270, 30);
+		jDesktopPane2.add(classifyId, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		jTable1.setModel(new javax.swing.table.DefaultTableModel(
 				new Object[][] { { null, null, null, null, null, null, null },
@@ -179,25 +194,25 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jLabel10.setBounds(1040, 60, 90, 30);
 		jDesktopPane2.add(jLabel10, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-		jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
+		level.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
 				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
-		jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+		level.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jComboBox2ActionPerformed(evt);
+				levelActionPerformed(evt);
 			}
 		});
-		jComboBox2.setBounds(1140, 60, 270, 30);
-		jDesktopPane2.add(jComboBox2, javax.swing.JLayeredPane.DEFAULT_LAYER);
+		level.setBounds(1140, 60, 270, 30);
+		jDesktopPane2.add(level, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		jLabel11.setFont(new java.awt.Font("新宋体", 1, 18));
 		jLabel11.setText("\u4fdd\u7ba1\u671f\u9650");
 		jLabel11.setBounds(1040, 110, 90, 30);
 		jDesktopPane2.add(jLabel11, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
-		jComboBox3.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
+		storeDate.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
 				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
-		jComboBox3.setBounds(1140, 110, 270, 30);
-		jDesktopPane2.add(jComboBox3, javax.swing.JLayeredPane.DEFAULT_LAYER);
+		storeDate.setBounds(1140, 110, 270, 30);
+		jDesktopPane2.add(storeDate, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		jSeparator2.setOrientation(javax.swing.SwingConstants.VERTICAL);
 		jSeparator2.setBounds(520, 60, 30, 120);
@@ -207,9 +222,8 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jLabel12.setText("\u6863\u6848\u53f7");
 		jLabel12.setBounds(100, 110, 90, 30);
 		jDesktopPane2.add(jLabel12, javax.swing.JLayeredPane.DEFAULT_LAYER);
-		searchTextName1.setBounds(200, 110, 280, 30);
-		jDesktopPane2.add(searchTextName1,
-				javax.swing.JLayeredPane.DEFAULT_LAYER);
+		recordId.setBounds(200, 110, 280, 30);
+		jDesktopPane2.add(recordId, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		jMenu1.setText("\u710a\u63a5\u6240\u5386\u53f2");
 		jMenu1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -224,6 +238,11 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jMenuBar1.add(jMenu1);
 
 		jMenu2.setText("\u6570\u636e\u5e93\u67e5\u8be2");
+		jMenu2.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jMenu2MouseClicked(evt);
+			}
+		});
 		jMenuBar1.add(jMenu2);
 
 		setJMenuBar(jMenuBar1);
@@ -266,7 +285,7 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		}
 	}
 
-	private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {
+	levelActionPerformed(java.awt.event.ActionEvent evt) {
 
 	}
 
@@ -329,7 +348,25 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 
 	//搜索使用
 	private void search() {
+		Map<String, String> map = new HashMap();
+
 		//日期
+		handleParameters(map);
+
+		String token = PublicStaticSta.getinstance().getStatus();
+		map.put("token", token);
+		try {
+			String postJson = HttpUtils.postJson(
+					"http://localhost:8080/findRecordEntity？token=" + token,
+					JSONObject.toJSONString(map), "utf-8");
+			HttpUtils.postForm("http://localhost:8080/findRecordEntity", map);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void handleParameters(Map<String, String> map) {
 		String startDateStr = (String) startDate.getValue();
 		String endDateStr = (String) endDate.getValue();
 		Date startDate = null;
@@ -337,12 +374,35 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		if (startDateStr != null && endDateStr != null) {
 			startDate = transDate(startDateStr);
 			endDate = transDate(endDateStr);
+			map.put("startDate", startDate.toString());
+			map.put("endDate", endDate.toString());
 		}
 		//分类
 		//关键词search
-		String name = (String) searchTextName.getText();
-		String text2 = (String) searchText.getText();
-
+		String name = (String) recordName.getText();
+		String responsePersonStr = (String) responsePerson.getText();
+		String recordIdStr = (String) recordId.getText();
+		String classifyIdStr = classifyId.getSelectedItem().toString();
+		String levelStr = level.getSelectedItem().toString();
+		String storeDateStr = storeDate.getSelectedItem().toString();
+		if (!StringUtils.isEmpty(name)) {
+			map.put("recordName", name);
+		}
+		if (!StringUtils.isEmpty(responsePersonStr)) {
+			map.put("responsePerson", responsePersonStr);
+		}
+		if (!StringUtils.isEmpty(recordIdStr)) {
+			map.put("recordId", recordIdStr);
+		}
+		if (!StringUtils.isEmpty(classifyIdStr)) {
+			map.put("classifyId", classifyIdStr);
+		}
+		if (!StringUtils.isEmpty(levelStr)) {
+			map.put("level", levelStr);
+		}
+		if (!StringUtils.isEmpty(storeDateStr)) {
+			map.put("storeDate", storeDateStr);
+		}
 	}
 
 	private Date transDate(String startDateStr) {
@@ -359,10 +419,8 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 
 	//GEN-BEGIN:variables
 	// Variables declaration - do not modify
+	private javax.swing.JComboBox classifyId;
 	private javax.swing.JFormattedTextField endDate;
-	private javax.swing.JComboBox jComboBox1;
-	private javax.swing.JComboBox jComboBox2;
-	private javax.swing.JComboBox jComboBox3;
 	private javax.swing.JDesktopPane jDesktopPane2;
 	private javax.swing.JLabel jLabel10;
 	private javax.swing.JLabel jLabel11;
@@ -382,11 +440,13 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 	private javax.swing.JSeparator jSeparator4;
 	private javax.swing.JSeparator jSeparator7;
 	private javax.swing.JTable jTable1;
-	private javax.swing.JFormattedTextField searchText;
-	private javax.swing.JFormattedTextField searchTextName;
-	private javax.swing.JFormattedTextField searchTextName1;
+	private javax.swing.JComboBox level;
+	private javax.swing.JFormattedTextField recordId;
+	private javax.swing.JFormattedTextField recordName;
+	private javax.swing.JFormattedTextField responsePerson;
 	private javax.swing.JLabel ssas;
 	private javax.swing.JFormattedTextField startDate;
+	private javax.swing.JComboBox storeDate;
 	// End of variables declaration//GEN-END:variables
 
 }
