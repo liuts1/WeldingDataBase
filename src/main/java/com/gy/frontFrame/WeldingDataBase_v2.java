@@ -159,12 +159,7 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jDesktopPane2.add(recordName, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		classifyId.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
-		classifyId.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				classifyIdActionPerformed(evt);
-			}
-		});
+				"", "焊材", "焊接工艺"}));
 		classifyId.setBounds(680, 60, 270, 30);
 		jDesktopPane2.add(classifyId, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
@@ -195,12 +190,7 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jDesktopPane2.add(jLabel10, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		level.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
-		level.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				levelActionPerformed(evt);
-			}
-		});
+				"", "秘密", "一般" }));
 		level.setBounds(1140, 60, 270, 30);
 		jDesktopPane2.add(level, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
@@ -210,7 +200,7 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jDesktopPane2.add(jLabel11, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
 		storeDate.setModel(new javax.swing.DefaultComboBoxModel(new String[] {
-				"Item 1", "Item 2", "Item 3", "Item 4", "Item 4" }));
+				"", "长期", "永久"}));
 		storeDate.setBounds(1140, 110, 270, 30);
 		jDesktopPane2.add(storeDate, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
@@ -238,11 +228,6 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		jMenuBar1.add(jMenu1);
 
 		jMenu2.setText("\u6570\u636e\u5e93\u67e5\u8be2");
-		jMenu2.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				jMenu2MouseClicked(evt);
-			}
-		});
 		jMenuBar1.add(jMenu2);
 
 		setJMenuBar(jMenuBar1);
@@ -283,10 +268,6 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 			this.dispose();
 			new MainFrame().setVisible(true);
 		}
-	}
-
-	levelActionPerformed(java.awt.event.ActionEvent evt) {
-
 	}
 
 	private void jSeparator4MouseClicked(java.awt.event.MouseEvent evt) {
@@ -356,10 +337,9 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		String token = PublicStaticSta.getinstance().getStatus();
 		map.put("token", token);
 		try {
-			String postJson = HttpUtils.postJson(
-					"http://localhost:8080/findRecordEntity？token=" + token,
-					JSONObject.toJSONString(map), "utf-8");
-			HttpUtils.postForm("http://localhost:8080/findRecordEntity", map);
+			String postForm = HttpUtils.postForm(
+					"http://localhost:8080/findRecordEntity", map);
+			System.out.println();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -398,7 +378,7 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 			map.put("classifyId", classifyIdStr);
 		}
 		if (!StringUtils.isEmpty(levelStr)) {
-			map.put("level", levelStr);
+			map.put("level", null);
 		}
 		if (!StringUtils.isEmpty(storeDateStr)) {
 			map.put("storeDate", storeDateStr);
