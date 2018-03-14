@@ -9,22 +9,21 @@ package com.gy.frontFrame;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.SocketTimeoutException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
 
-import org.apache.http.conn.ConnectTimeoutException;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gy.login.PublicStaticSta;
+import com.gy.user.entity.RecordEntity;
 import com.gy.utils.date.DateChooser;
 import com.gy.utils.http.HttpUtils;
 
@@ -339,11 +338,38 @@ public class WeldingDataBase_v2 extends javax.swing.JFrame {
 		try {
 			String postForm = HttpUtils.postForm(
 					"http://localhost:8080/findRecordEntity", map);
+			List<RecordEntity> recordEntityList =(List<RecordEntity>) JSONObject.parse(postForm);
+			changeTableData(recordEntityList);
 			System.out.println();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void changeTableData(List<RecordEntity> recordEntityList) {
+		Object[][] recordList = new Object[0][];
+		for (int i = 0; i < recordEntityList.size()-1; i++) {
+			RecordEntity recordEntity = recordEntityList.get(i);
+			recordList[i][0] = recordEntity.getRecordId();
+			recordList[i][1] = recordEntity.getRecordName();
+			recordList[i][2] = recordEntity.getRecordDate();
+			recordList[i][3] = recordEntity.getRecordStoreDate();
+			recordList[i][4] = recordEntity.getLevel();
+			recordList[i][5] = recordEntity.getResponsePerson();
+			recordList[i][6] = recordEntity.getClassifyName();
+		}
+		jTable1.setModel(new javax.swing.table.DefaultTableModel(
+				recordList,
+				new String[] { "RecordId", "RecordName", "RecordDate", "RecordStoreDate",
+						"Level", "ResponsePerson", "ClassifyName" }) {
+			boolean[] canEdit = new boolean[] { false, false, false, false,
+					false, false, false };
+
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return canEdit[columnIndex];
+			}
+		});
 	}
 
 	private void handleParameters(Map<String, String> map) {
